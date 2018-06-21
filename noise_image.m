@@ -1,4 +1,4 @@
-addpath('/home/jcarroll/OpenPV/mlab/util/')
+addpath('/projects/pcsri/PetaVision/OpenPV/mlab/util/')
 pkg load image
 
 
@@ -15,7 +15,7 @@ BaseString=arg_list{1};
 
 InputString = [ BaseString "Input.pvp"];
 ReconString = [ BaseString "InputRecon.pvp"];
-NoiseString = [ BaseString "Noise.pvp"];
+NoiseString = [ BaseString "NoiseLayer.pvp"];
 ErrorString = [ BaseString "InputError.pvp"];
 		
 [inputData, inputHdr] = readpvpfile(InputString);
@@ -23,7 +23,7 @@ ErrorString = [ BaseString "InputError.pvp"];
 [noiseData, noiseHdr] = readpvpfile(NoiseString);
 [errorData, errorHdr] = readpvpfile(ErrorString);
 
-pictureIndex=100;
+pictureIndex=1;
 
 # Original Picture
 InputMax = max(inputData{pictureIndex}.values(:));
@@ -55,7 +55,7 @@ ReconImage = (permute(ReconImage, [2,1,3]));
 concatenated = imresize(horzcat(InputImage,NoiseImage,ErrorImage, ReconImage), 4);
 
 figure;
-imwrite(concatenated, "test.png")
+imwrite(concatenated, "test1.png")
 
 
 
