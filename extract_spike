@@ -1,0 +1,60 @@
+#!/bin/bash
+
+spike_loc=6000 # timestep at which spike occurs
+spike_len=100  # number of timesteps after the spike to include
+display_period=8000
+
+input=$1
+timescale=$2
+
+
+# Extract the samples around the spikes and throw away everything else
+awk -v loc=$spike_loc \
+    -v len=$spike_len \
+    -v period=$display_period \
+    '{
+        if (NR % period == loc - 4) {
+            before_spike = $3   
+        } else if (NR % period == loc + 1) {
+            spike_peak = $3
+        }
+        if ( NR % period > loc && NR % period <= loc + len) {
+            print $3 " " ($3 - before_spike) " " $3/before_spike
+        }
+    }' $input > ${input}_only_spike
+
+# Get the actual time for the duration of the spike
+paste -s -d' \n' $timescale  | awk \
+    -v loc=$spike_loc \
+    -v len=$spike_len \
+    -v period=$display_period \
+    -F '[[:space:]=,]+' \
+    '{
+        if (NR % period == loc) {
+            realtime = 0
+        }
+        if ( NR % period > loc && NR % period <= loc + len) {
+            print realtime
+            realtime += $6
+        }
+    }' > ${timescale}_only_spike
+
+tac ${timescale}_only_spike | awk \
+    'BEGIN {
+        reset = 1;
+    }
+    {
+        if (reset) {
+            factor = $1;
+            reset = 0;
+        }
+        if ($1 == 0) {
+            reset = 1;
+        }
+        print $1/factor " " $factor
+    }' | tac > ${timescale}_scaled
+
+paste ${timescale}_scaled ${input}_only_spike | awk \
+    '{
+            print
+    }' > spike_over_time
