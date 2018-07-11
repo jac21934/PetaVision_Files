@@ -1,7 +1,7 @@
 package.path = package.path .. ";" .. "/home/ncarlson/OpenPV/parameterWrapper/?.lua";
 local pv = require "PVModule";
 
-local nbatch           = 1;    --Number of images to process in parallel
+local nbatch           = 2;    --Number of images to process in parallel
 local nxSize           = 32;    --CIFAR images are 32 x 32
 local nySize           = 32;
 local patchSize        = 8;
@@ -62,17 +62,19 @@ local pvParameters = {
 	 };
 
 	 AdaptiveTimeScales = {
-			groupType                           = "AdaptiveTimeScaleProbe";
+			groupType                           = "KneeTimeScaleProbe";
 			targetName                          = "V1EnergyProbe";
 			message                             = nil;
 			textOutputFlag                      = true;
 			probeOutputFile                     = "AdaptiveTimeScales.txt";
-			triggerLayerName                    = "Input";
+			triggerLayerName                    = "TimerLayer";
 			triggerOffset                       = 0;
 			baseMax                             = 0.06150000;  -- Initial upper bound for timescale growth
 			baseMin                             = 0.06;  -- Initial value for timescale growth
-			tauFactor                           = 0.03;  -- Percent of tau used as growth target
-			growthFactor                        = 0.025; -- Exponential growth factor. The smaller value between this and the above is chosen. 
+			tauFactor                           = 0.01;  -- Percent of tau used as growth target
+			growthFactor                        = 0.005; -- Exponential growth factor. The smaller value between this and the above is chosen. 
+         kneeThresh                          = 1;
+         kneeSlope                           = 0.01;
 			writeTimeScales                     = true;
 			writeTimeScalesFieldnames           = false;
 	 };
@@ -194,31 +196,33 @@ local pvParameters = {
 
 
 	 SpikeLayer = {
-            -- Randomly spike the V1 to record the recovery time
-	 		groupType = "RandomSpikeLayer";
+       -- Randomly spike the V1 to record the recovery time
+       groupType = "RandomSpikeLayer";
 
-	 		-- Scale and features match input layer
-	 		nxScale                             = 1/stride;
-	 		nyScale                             = 1/stride;
-	 		nf                                  = dictionarySize;
-	 		phase                               = 4;
-	 		mirrorBCflag                        = false;
-	 		valueBC                             = 0;
+       -- Scale and features match input layer
+       nxScale                             = 1/stride;
+       nyScale                             = 1/stride;
+       nf                                  = dictionarySize;
+       phase                               = 4;
+       mirrorBCflag                        = false;
+       valueBC                             = 0;
 
-	 		initializeFromCheckpointFlag        = false;
-	 		InitVType                           = "ZeroV"; 
-	 		triggerLayerName                    = "TimerLayer";
-            triggerBehavior                     = "updateOnlyOnTrigger";
-            triggerLayerOffset                  = 0;
-	 		seed                                = 123456789;
-	 		writeStep                           = writeStep;
-	 		initialWriteTime                    = initialWriteTime;
-	 		sparseLayer                         = false;
-	 		updateGpu                           = false;
-	 		dataType                            = nil;
-	 		spikeValue                          = VThresh + 0.01;
-            numSpike                            = 1;
-	 		originalLayerName                   = "V1";
+       initializeFromCheckpointFlag        = false;
+       InitVType                           = "ZeroV"; 
+       triggerLayerName                    = "TimerLayer";
+       triggerBehavior                     = "updateOnlyOnTrigger";
+       triggerLayerOffset                  = 0;
+       seed                                = 123456789;
+       writeStep                           = writeStep;
+       initialWriteTime                    = initialWriteTime;
+       sparseLayer                         = false;
+       updateGpu                           = false;
+       dataType                            = nil;
+       spikeValue                          = VThresh + 0.01;
+       neuronsToSpike                      = "belowThreshold";
+       numSpike                            = 1;
+       threshold                           = 0;
+       originalLayerName                   = "V1";
 	 };
 
      TimerLayer = {
