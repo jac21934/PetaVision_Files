@@ -57,4 +57,4 @@ tac ${timescale}_only_spike | awk \
 paste ${timescale}_scaled ${input}_only_spike | awk \
     '{
             print
-    }' > spike_over_time
+    }' >> spike_over_time
