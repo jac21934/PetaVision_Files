@@ -1,0 +1,13 @@
+#!/bin/bash
+timescale=$1
+
+spike_loc=6000
+spike_len=200
+
+# Get the timesteps
+paste -s -d' \n' $timescale  | awk \
+    -F '[[:space:]=,]+' \
+    '{
+         print NR " " $6
+    }' | awk \
+   'NR % 8000 > 6000 && NR % 8000 < 6200' > timestep_only_spike
