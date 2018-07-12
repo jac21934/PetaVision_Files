@@ -34,7 +34,7 @@ def fit_exponential(x,m,c):
         return c * np.exp(-x/m)
 
 
-DataPlot = True
+DataPlot = False
 Filename = "./kneeSpikeData_0.5"
 numRuns = 4100
 
@@ -94,8 +94,6 @@ for i in range(numRuns):
     if xs[i] == [] or ys[i] == []:
         #print "Skipping run " + str(i+1)
         continue
-    if xs[i][-1] > 6:
-        continue
 
     
     fitParams, Covariance = curve_fit(fit_exponential, xs[i], ys[i])
@@ -104,13 +102,7 @@ for i in range(numRuns):
     
     fitStdDev.append(np.sum(np.sqrt(np.diag(Covariance))))
 
-    if fitStdDev[-1] > 100:
-        fitStdDev.pop(-1)
-        continue
-    elif fitParams[0] > 100000: # <--------------------- NOT GOOD SCIENCE, JUST A TEST
-        continue
-    else:
-        exponent.append(fitParams[0])
+    exponent.append(fitParams[0])
 
 
     
