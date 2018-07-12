@@ -1,6 +1,6 @@
 #!/bin/bash
 
-spike_loc=6000 # timestep at which spike occurs
+spike_loc=7500 # timestep at which spike occurs
 spike_len=100  # number of timesteps after the spike to include
 display_period=8000
 
