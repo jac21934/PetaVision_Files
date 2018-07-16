@@ -54,7 +54,7 @@ tac ${timescale}_only_spike | awk \
         print $1/factor " " $factor
     }' | tac > ${timescale}_scaled
 
-paste ${timescale}_scaled ${input}_only_spike | awk \
+paste ${timescale}_only_spike ${input}_only_spike | awk \
     '{
             print
     }' > spike_over_time
