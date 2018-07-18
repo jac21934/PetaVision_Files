@@ -1,6 +1,6 @@
 # Imports
 import os, sys
-lib_path = os.path.abspath("/home/jacob/Code/OpenPV/python/")
+lib_path = os.path.abspath("/projects/pcsri/PetaVision/SpikingOpenPV/python/")
 sys.path.append(lib_path)
 import pvtools as pv
 import numpy as np
@@ -25,7 +25,7 @@ for i in range(0,128):
     feature = feature.reshape(64,64)
     
     
-    plt.imshow(feature,cmap='gray')
+    plt.imshow(feature)
     plt.savefig("./figures/feature_" + str(i) + ".png") 
 
 
